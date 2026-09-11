@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#090b17">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="screen-orientation" content="portrait">
+  <title>星燼倖存者</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+</head>
+<body>
+  <main id="game-shell">
+    <canvas id="game" aria-label="星燼倖存者遊戲畫面"></canvas>
+    <section id="hud" class="hidden" aria-live="polite">
+      <div class="top-row">
+        <div class="stat"><small>生命</small><b id="hp-text">100 / 100</b></div>
+        <div class="timer" id="timer">06:00</div>
+        <div class="stat right"><small>擊破</small><b id="kills">0</b></div>
+      </div>
+      <div class="bar hp"><i id="hp-bar"></i></div>
+      <div id="boss-hud" class="boss-hud hidden"><small>裂界霸主・阿刻戎</small><div><i id="boss-bar"></i></div></div>
+      <div class="bar xp"><i id="xp-bar"></i></div>
+      <div class="level">等級 <b id="level">1</b></div>
+      <div class="weapon-status" id="weapon-status">脈衝砲・I</div>
+      <div class="phase-status hidden" id="phase-status">緊急相位・就緒</div>
+      <button id="pause" class="icon-button" aria-label="暫停">Ⅱ</button>
+    </section>
+
+    <div id="touch-controls" class="hidden" aria-label="觸控移動區">
+      <div id="joystick" class="joystick">
+        <div id="stick" class="stick"></div>
+      </div>
+      <span>拖曳移動</span>
+    </div>
+
+    <section id="start-screen" class="panel screen">
+      <p class="eyebrow">A TINY SURVIVAL GAME</p>
+      <h1>星燼 <em>倖存者</em></h1>
+      <p class="lead">移動閃避敵群，武器會自動鎖定。<br>收集星燼、選擇強化，完成你的航行任務。</p>
+      <div class="weapon-select">
+        <p>選擇起始武器</p>
+        <div>
+          <button class="weapon-option selected" data-weapon="pulse"><i>➤</i><span><b>脈衝砲</b><small>高速・穿透</small></span></button>
+          <button class="weapon-option" data-weapon="chain"><i>ϟ</i><span><b>連鎖雷電</b><small>跳躍・清場</small></span></button>
+        </div>
+      </div>
+      <button id="open-guide" class="guide-button"><span>?</span> 武器與技能說明</button>
+      <div class="stage-list">
+        <button class="stage-card" id="start">
+          <span class="stage-icon">♜</span><span><small>STAGE 01 · 討伐戰</small><b>裂界獵場</b><em>閃避紅色衝刺路徑，六分鐘後擊敗降臨的霸主。</em></span><strong>魔王戰</strong>
+        </button>
+      </div>
+      <div class="controls"><span class="desktop-help">WASD／方向鍵移動</span><span class="touch-help">左下搖桿移動</span><span>P／ESC 或按鈕暫停</span></div>
+    </section>
+
+    <section id="upgrade-screen" class="overlay hidden">
+      <div class="upgrade-wrap">
+        <p class="eyebrow">LEVEL UP</p>
+        <h2>選擇一項強化</h2>
+        <div id="upgrade-cards" class="cards"></div>
+      </div>
+    </section>
+
+    <section id="guide-screen" class="overlay hidden" aria-modal="true" role="dialog" aria-labelledby="guide-title">
+      <div class="guide-panel">
+        <button id="close-guide" class="close-button" aria-label="關閉說明">×</button>
+        <p class="eyebrow">COMBAT DATABASE</p>
+        <h2 id="guide-title">武器與技能</h2>
+        <p class="guide-intro">武器不會占用三選一。角色達到指定等級時，武器會自動強化。</p>
+        <div class="weapon-guides">
+          <article class="weapon-guide pulse-guide">
+            <div class="guide-heading"><i>➤</i><span><small>PROJECTILE</small><b>脈衝砲</b></span></div>
+            <p>自動鎖定最近敵人，適合集中火力與穿透敵群。</p>
+            <ol>
+              <li><b>Lv.3／7</b><span>提升傷害、射速、彈速與彈體大小。</span></li>
+              <li><b>Lv.5／9</b><span>提升基礎性能，並增加一枚彈體。</span></li>
+              <li><b>角色 Lv.11</b><span>進化為「星爆加農」。</span></li>
+              <li><b>進化效果</b><span>增加兩枚彈體、一次穿透，並強化命中爆炸範圍。</span></li>
+            </ol>
+          </article>
+          <article class="weapon-guide chain-guide">
+            <div class="guide-heading"><i>ϟ</i><span><small>CHAIN</small><b>連鎖雷電</b></span></div>
+            <p>命中後自動跳往附近敵人，適合處理密集敵群。</p>
+            <ol>
+              <li><b>Lv.3／7</b><span>提升傷害、射速；連鎖距離提高 8%。</span></li>
+              <li><b>Lv.5／9</b><span>連鎖距離提高 8%，並增加一個連鎖目標。</span></li>
+              <li><b>角色 Lv.11</b><span>進化為「神罰雷網」。</span></li>
+              <li><b>進化效果</b><span>增加兩個連鎖目標，最多攻擊六個；連鎖距離提高 20%。</span></li>
+            </ol>
+          </article>
+        </div>
+        <div class="skill-guide">
+          <h3>一般技能 <small>每項最高 Lv.5</small></h3>
+          <div class="skill-guide-grid">
+            <span><i>✦</i><b>過載核心</b><small>提高武器傷害</small></span>
+            <span><i>⌁</i><b>脈衝加速</b><small>縮短攻擊間隔</small></span>
+            <span><i>◇</i><b>相位裝甲</b><small>降低受到的傷害</small></span>
+            <span><i>♥</i><b>奈米修復</b><small>增加最大生命並治療</small></span>
+            <span><i>✚</i><b>自癒裝甲</b><small>持續恢復生命</small></span>
+            <span><i>※</i><b>弱點解析</b><small>提高暴擊機率</small></span>
+            <span><i>◈</i><b>幻影迴避</b><small>機率完全閃避傷害</small></span>
+            <span><i>⬡</i><b>緊急相位</b><small>受傷後無敵，冷卻 15 秒</small></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pause-screen" class="overlay hidden">
+      <div class="panel small">
+        <p class="eyebrow">SYSTEM PAUSED</p>
+        <h2>航行暫停</h2>
+        <div class="menu-actions">
+          <button id="resume" class="primary">繼續</button>
+          <button class="secondary home-button">回到主畫面</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="end-screen" class="overlay hidden">
+      <div class="panel small">
+        <p class="eyebrow" id="end-label">SIGNAL LOST</p>
+        <h2 id="end-title">星火熄滅</h2>
+        <p id="end-copy"></p>
+        <div class="result-grid">
+          <div><b id="result-time">00:00</b><small>存活時間</small></div>
+          <div><b id="result-kills">0</b><small>擊破數</small></div>
+          <div><b id="result-level">1</b><small>最終等級</small></div>
+        </div>
+        <div class="menu-actions">
+          <button id="restart" class="primary">再次航行</button>
+          <button class="secondary home-button">回到主畫面</button>
+          <button id="copy-report" class="secondary">複製測試報告</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="rotate-screen">
+      <div class="phone-icon">↻</div>
+      <h2>請轉回直向</h2>
+      <p>本遊戲採直向畫面設計</p>
+    </section>
+  </main>
+  <script src="game.js"></script>
+  <script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));</script>
+</body>
+</html>
