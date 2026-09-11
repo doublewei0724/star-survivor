@@ -1,10 +1,14 @@
-const CACHE_NAME='star-survivor-v5';
+const CACHE_NAME='star-survivor-v6';
 const APP_SHELL=[
   './',
   './index.html',
   './style.css',
   './game.js',
   './manifest.webmanifest',
+  './audio/menu.mp3',
+  './audio/battle.mp3',
+  './audio/boss.mp3',
+  './audio/victory.mp3',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png'
