@@ -14,6 +14,8 @@ python3 -m http.server 8080
 
 然後前往 <http://localhost:8080>。
 
+公開測試版：<https://doublewei0724.github.io/star-survivor/>
+
 公開測試版部署於 GitHub Pages 後，玩家可直接以瀏覽器遊玩，也可將網站安裝到手機或桌面。遊戲結算畫面提供「複製測試報告」，方便回報版本、武器、勝敗、等級、擊破數、生命、技能配置與裝置資訊。
 
 ## 操作
