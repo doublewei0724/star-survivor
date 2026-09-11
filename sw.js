@@ -1,4 +1,4 @@
-const CACHE_NAME='star-survivor-v2';
+const CACHE_NAME='star-survivor-v3';
 const APP_SHELL=[
   './',
   './index.html',
